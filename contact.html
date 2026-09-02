@@ -43,6 +43,9 @@
     emailjs.init({ publicKey: "ZNn1aG519ziJ2NLmZ" });
   </script>
 
+  <!-- Google reCAPTCHA v2 -->
+  <script async defer src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
+
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -176,6 +179,9 @@
           <div class="form-group">
             <label>Message</label><textarea name="message" placeholder="How can we help you?" required></textarea>
           </div>
+          <div class="recaptcha-wrap">
+            <div id="recaptchaWidget"></div>
+          </div>
           <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%; justify-content: center">
             Send Message
           </button>
@@ -230,10 +236,29 @@
     const submitBtn = document.getElementById("submitBtn");
     const formSuccess = document.getElementById("formSuccess");
     const formError = document.getElementById("formError");
+    let recaptchaWidgetId;
+
+    function renderRecaptcha() {
+      if (window.grecaptcha && recaptchaWidgetId === undefined) {
+        recaptchaWidgetId = grecaptcha.render("recaptchaWidget", {
+          sitekey: "6LeM2KUtAAAAABrR29MXuzcNhCEqO2LAXTFiWYJk",
+          size: "normal"
+        });
+      }
+    }
+
+    window.addEventListener("load", renderRecaptcha);
 
     contactForm.addEventListener("submit", function (e) {
       e.preventDefault();
       formError.style.display = "none";
+
+      if (recaptchaWidgetId === undefined || !grecaptcha.getResponse(recaptchaWidgetId)) {
+        formError.textContent = "Please complete the reCAPTCHA challenge before sending your message.";
+        formError.style.display = "block";
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.textContent = "Sending...";
 
@@ -242,6 +267,7 @@
         .then(() => {
           formSuccess.style.display = "block";
           contactForm.reset();
+          grecaptcha.reset(recaptchaWidgetId);
           setTimeout(() => (formSuccess.style.display = "none"), 5000);
         })
         .catch((err) => {
