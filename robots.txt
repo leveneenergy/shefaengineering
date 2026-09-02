@@ -1,0 +1,20 @@
+# Robots.txt for Shefa Engineering
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /about.html
+Allow: /what-we-do/
+Allow: /contact.html
+Allow: /management.html
+Allow: /csr.html
+Allow: /css/
+Allow: /components/
+Disallow: /admin/
+Disallow: /*.py
+Disallow: /__*
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://shefaengineering.com/sitemap.xml
